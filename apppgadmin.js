@@ -823,7 +823,6 @@ app.post('/expenses/add', async (req, res) => {
 
 // GET /expenses - List/Filter Expenses
 
-// GET /expenses - List/Filter Expenses
 
 
 app.get('/expenses', async (req, res) => {
@@ -855,6 +854,7 @@ app.get('/expenses', async (req, res) => {
     res.status(500).send("Database error");
   }
 });
+
 
 // GET /expenses/export - Export to Excel
 app.get('/expenses/export', async (req, res) => {
