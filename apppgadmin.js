@@ -824,6 +824,8 @@ app.post('/expenses/add', async (req, res) => {
 // GET /expenses - List/Filter Expenses
 
 // GET /expenses - List/Filter Expenses
+const moment = require('moment');
+
 app.get('/expenses', async (req, res) => {
   const { from, to } = req.query;
   let sql = `SELECT * FROM expenses`;
@@ -838,14 +840,13 @@ app.get('/expenses', async (req, res) => {
   try {
     const result = await dbAllAsync(sql, params);
 
-    // Format dates for EJS
-    const formattedExpenses = result.map(e => ({
-      ...e,
-      expense_date_formatted: moment(e.expense_date).format('YYYY-MM-DD') // or 'DD/MM/YYYY'
-    }));
+    // Format date before sending to EJS
+    result.forEach(e => {
+      e.expense_date_formatted = moment(e.expense_date).format('DD/MM/YYYY');
+    });
 
     res.render('expenses', {
-      expenses: formattedExpenses,
+      expenses: result,
       from: from || '',
       to: to || ''
     });
