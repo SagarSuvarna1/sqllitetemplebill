@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Shree Dongerkery Venkatramana Temple
+Dongerkery Master Report</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      background: #f0f4f8;
+    }
+
+    header {
+      background: linear-gradient(to right, #884d00, #cc6600);
+      color: white;
+      padding: 20px;
+      text-align: center;
+      position: relative;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 26px;
+    }
+
+    header p {
+      margin: 5px 0 0;
+      font-size: 14px;
+    }
+
+    .logo {
+      position: absolute;
+      left: 20px;
+      top: 20px;
+    }
+
+    .logo img {
+      height: 50px;
+      border-radius: 50%;
+    }
+
+    .top-buttons {
+      display: flex;
+      justify-content: flex-end;
+      padding: 10px 30px;
+      gap: 10px;
+    }
+
+    .btn {
+      padding: 10px 16px;
+      background: #cc6600;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      text-decoration: none;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.3s ease;
+    }
+
+    .btn:hover {
+      background: #aa5500;
+    }
+
+    .container {
+      padding: 30px;
+    }
+
+    form {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+      margin-bottom: 30px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 15px;
+    }
+
+    label {
+      font-weight: bold;
+    }
+
+    input[type="text"], select {
+      padding: 8px 12px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      min-width: 150px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    th, td {
+      padding: 12px;
+      text-align: center;
+      border-bottom: 1px solid #eee;
+    }
+
+    th {
+      background-color: #ffe6cc;
+      color: #333;
+    }
+
+    tr:hover {
+      background-color: #f9f9f9;
+    }
+
+    footer {
+      text-align: center;
+      padding: 15px;
+      background-color: #333;
+      color: white;
+      font-size: 14px;
+      margin-top: 50px;
+    }
+
+    @media (max-width: 768px) {
+      form {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      input, select {
+        width: 100%;
+      }
+
+      .top-buttons {
+        flex-direction: column;
+        align-items: flex-end;
+        padding: 10px 20px;
+      }
+
+      table, th, td {
+        font-size: 13px;
+      }
+
+      header h1 {
+        font-size: 20px;
+      }
+
+      .logo img {
+        height: 40px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo">
+      <img src="/img/logo-right.png" alt="Temple Logo">
+    </div>
+    <h1>Shree Dongerkery Venkatramana Temple
+Dongerkery</h1>
+    <p>Daily Billing Report Panel</p>
+  </header>
+
+  <div class="top-buttons">
+    <a href="/dashboard" class="btn">🏠 Back to Dashboard</a>
+    <a href="#" class="btn" id="exportBtn">📁 Export to Excel</a>
+  </div>
+
+  <div class="container">
+    <form method="POST" action="/report" id="filterForm">
+      <label>From:</label>
+      <input type="text" name="from" id="fromDate" required placeholder="Select start date">
+
+      <label>To:</label>
+      <input type="text" name="to" id="toDate" required placeholder="Select end date">
+
+      <label>Pooja:</label>
+      <select name="pooja_name">
+        <option value="">-- All --</option>
+        <% poojas.forEach(p => { %>
+          <option value="<%= p.pooja_name %>"><%= p.pooja_name %></option>
+        <% }) %>
+      </select>
+
+      <label>User:</label>
+      <select name="username">
+        <option value="">-- All --</option>
+        <% users.forEach(u => { %>
+          <option value="<%= u.username %>"><%= u.username %></option>
+        <% }) %>
+      </select>
+
+      <label>Payment Mode:</label>
+      <select name="payment_mode">
+        <option value="">-- All --</option>
+        <option value="Cash">Cash</option>
+        <option value="Online">Online</option>
+      </select>
+
+      <button class="btn" type="submit">🔍 Generate</button>
+    </form>
+
+    <% if (results) { %>
+      <table>
+        <thead>
+          <tr>
+            <th>Receipt No</th>
+            <th>Date</th>
+            <th>Devotee</th>
+            <th>Pooja</th>
+            <th>Qty</th>
+            <th>Total ₹</th>
+            <th>Mode</th>
+            <th>User</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% results.forEach(r => { %>
+            <tr>
+              <td><%= r.receipt_no %></td>
+              <td><%= moment(r.bill_datetime).format('DD/MM/YYYY HH:mm:ss') %></td>
+
+              <td><%= r.dev_name %></td>
+              <td><%= r.pooja_name %></td>
+              <td><%= r.qty %></td>
+              <td><%= r.total %></td>
+              <td><%= r.payment_mode %></td>
+              <td><%= r.username %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    <% } else { %>
+      <p style="text-align:center; color: #999;">No results yet. Use the filters to generate a report.</p>
+    <% } %>
+  </div>
+
+  <footer>
+    &copy; <%= new Date().getFullYear() %> Shree Dongerkery Venkatramana Temple
+Dongerkery. All Rights Reserved.
+  </footer>
+
+  <!-- Flatpickr -->
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script>
+    flatpickr("#fromDate", { dateFormat: "d/m/Y", defaultDate: "today" });
+    flatpickr("#toDate", { dateFormat: "d/m/Y", defaultDate: "today" });
+  </script>
+
+  <!-- Export button script -->
+  <script>
+    const form = document.getElementById("filterForm");
+    const exportBtn = document.getElementById("exportBtn");
+
+    function updateExportLink() {
+      const formData = new FormData(form);
+      const query = new URLSearchParams(formData).toString();
+      exportBtn.href = '/report/export?' + query;
+    }
+
+    // On form submit or load
+    form.addEventListener("submit", updateExportLink);
+    window.addEventListener("DOMContentLoaded", updateExportLink);
+  </script>
+
+</body>
+</html>

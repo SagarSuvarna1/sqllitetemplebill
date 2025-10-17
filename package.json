@@ -1,0 +1,23 @@
+{
+  "name": "temple-billing",
+  "version": "1.0.0",
+  "description": "Temple Billing & Expense Management System",
+  "main": "apppgadmin.js",
+  "scripts": {
+    "start": "node apppgadmin.js"
+  },
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "bcryptjs": "^3.0.2",
+    "body-parser": "^2.2.0",
+    "date-fns": "^4.1.0",
+    "date-fns-tz": "^1.3.7",
+    "ejs": "^3.1.10",
+    "exceljs": "^4.4.0",
+    "express": "^5.1.0",
+    "express-session": "^1.18.1",
+    "moment": "^2.30.1",
+    "pg": "^8.16.3",
+    "sqlite3": "^5.1.7"
+  }
+}

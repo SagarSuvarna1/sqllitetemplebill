@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Receipt - Siddi Vinayaka Temple</title>
+  <style>
+    @page {
+      size: 58mm auto;
+      margin: 0;
+    }
+    body {
+      width: 58mm;
+      margin: 0;
+      background: #fff;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      font-size: 11.5px;
+      color: #222;
+    }
+    .receipt {
+      width: 52mm;
+      margin: 6mm auto;
+      padding: 4mm 3mm;
+      border: 1px dashed #bbb;
+      border-radius: 6px;
+      background: #fff;
+      box-sizing: border-box;
+    }
+    .header {
+      text-align: center;
+      color: #c0392b;
+      font-size: 13.5px;
+      font-weight: bold;
+      margin-bottom: 2px;
+      letter-spacing: 0.2px;
+    }
+    .sub-header {
+      text-align: center;
+      font-size: 10px;
+      color: #555;
+      margin-bottom: 7px;
+      line-height: 1.2;
+    }
+    .line {
+      border-top: 1px dashed #bbb;
+      margin: 7px 0;
+    }
+    .info-section {
+      margin-bottom: 8px;
+      font-size: 11px;
+    }
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 3px;
+    }
+    .label {
+      font-weight: 600;
+      color: #333;
+      min-width: 60px;
+      display: inline-block;
+    }
+.value {
+  text-align: right;
+  flex: 1;
+  color: #222;
+  white-space: nowrap;
+  overflow: visible;   /* Previously might have been hidden */
+  text-overflow: unset; /* Remove any ellipsis */
+  padding-left: 8px;
+}
+    .details {
+      margin: 8px 0 4px 0;
+      font-size: 11px;
+    }
+    .amount {
+      text-align: right;
+      font-size: 14px;
+      font-weight: bold;
+      color: #d32f2f;
+      margin: 10px 0 6px 0;
+      letter-spacing: 1px;
+    }
+    .qr {
+      text-align: center;
+      margin-top: 10px;
+    }
+    .qr img {
+      width: 68px;
+      height: 68px;
+      border: 1px solid #eee;
+      border-radius: 4px;
+      padding: 2px;
+      background: #fafafa;
+    }
+    .footer {
+      text-align: center;
+      font-size: 10px;
+      margin-top: 12px;
+      color: #888;
+      line-height: 1.3;
+    }
+    @media screen {
+      body { background: #f4f4f4; }
+      .receipt { box-shadow: 0 2px 8px rgba(0,0,0,0.07); }
+    }
+  </style>
+</head>
+<body onload="window.print(); setTimeout(() => { window.location.href='/billing'; }, 1000);">
+  <div class="receipt">
+    <div class="header">Siddi Vinayaka Temple, Polali</div>
+    <div class="sub-header">
+      Near Polali Rajarajeshwari Temple,<br>
+      Bantwal Taluk, Dakshina Kannada
+    </div>
+
+    <div class="line"></div>
+    <div class="info-section">
+      <div class="info-row">
+        <span class="label">Receipt No:</span>
+        <span class="value"><%= receipt_no %></span>
+      </div>
+      <div class="info-row">
+        <span class="label">Date:</span>
+        <span class="value"><%= bill_date %></span>
+      </div>
+    </div>
+
+    <div class="line"></div>
+    <div class="details">
+      <div class="info-row">
+        <span class="label">Received From:</span>
+        <span class="value"><%= dev_name %></span>
+      </div>
+      <div class="info-row">
+        <span class="label"><%= pooja_name.startsWith('Donation') ? 'Donation For:' : 'Pooja:' %></span>
+        <span class="value"><%= pooja_name %></span>
+      </div>
+
+      <% if (!pooja_name.startsWith('Donation')) { %>
+      <div class="info-row">
+        <span class="label">Quantity:</span>
+        <span class="value"><%= qty %></span>
+      </div>
+      <div class="info-row">
+        <span class="label">Rate:</span>
+        <span class="value">₹<%= price %></span>
+      </div>
+      <% } %>
+
+      <div class="info-row">
+        <span class="label">Payment:</span>
+        <span class="value"><%= payment_mode || "Cash" %></span>
+      </div>
+    </div>
+
+    <div class="line"></div>
+    <div class="amount">Total Paid: ₹ <%= total %></div>
+    <div class="line"></div>
+
+    <div class="qr">
+      <img src="https://api.qrserver.com/v1/create-qr-code/?size=68x68&data=<%= encodeURIComponent(
+        `Receipt No: ${bill_id}\nName: ${dev_name}\nPurpose: ${pooja_name}\n${
+          pooja_name.startsWith('Donation') ? '' : `Qty: ${qty}\nRate: ₹${price}\n`
+        }Total: ₹${total}\nPayment Mode: ${payment_mode || 'Cash'}\nDate: ${bill_date}`
+      ) %>" alt="QR Code">
+    </div>
+
+    <div class="footer">
+      For Siddi Vinayaka Temple<br>
+      This is a system-generated receipt.<br>
+      No signature required.
+    </div>
+  </div>
+</body>
+</html>

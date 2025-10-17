@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Temple Dashboard - Shree  Venkatramana Temple</title>
+  <link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #fefcf8;
+      margin: 0;
+    }
+    header {
+      background: #6a1b09;
+      color: #fff;
+      padding: 20px;
+      text-align: center;
+      font-size: 26px;
+      font-weight: bold;
+    }
+    .nav {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      background: #fff4e6;
+      padding: 10px 0;
+    }
+    .nav a {
+      padding: 10px 18px;
+      text-decoration: none;
+      color: #6a1b09;
+      font-weight: 600;
+      border-radius: 6px;
+      background: #fff;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    }
+    .filters {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      padding: 20px;
+      flex-wrap: wrap;
+    }
+    .filters input,
+    .filters select {
+      padding: 10px;
+      font-size: 14px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    .summary {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      padding: 20px;
+      flex-wrap: wrap;
+    }
+    .card {
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+      min-width: 220px;
+      text-align: center;
+    }
+    .card h3 {
+      color: #a84300;
+      margin-bottom: 10px;
+    }
+    .card p {
+      font-size: 22px;
+      font-weight: bold;
+    }
+    .charts {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 30px;
+      padding: 20px;
+    }
+    .chart-box {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    }
+    footer {
+      text-align: center;
+      padding: 15px;
+      background: #eee;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <header>🛕 Shree  Venkatramana Temple - Dashboard</header>
+
+  <div class="nav">
+    <a href="/dashboard">🏠 Dashboard</a>
+    <a href="/billing">🧾 Billing</a>
+    <a href="/pooja-master">⚙️ Pooja Master</a>
+    <a href="/report">📊 Reports</a>
+    <a href="/collections">💰 My Collection</a>
+	<a href="/expenses">💰 Expenses Mangement</a>
+    <a href="/logout">🔓 Logout</a>
+  </div>
+
+  <div class="filters">
+    <select id="rangeSelector">
+      <option value="today" <%= (range === 'today' || !['yesterday', 'week', 'month', 'custom'].includes(range)) ? 'selected' : '' %>>Today</option>
+      <option value="yesterday" <%= range === 'yesterday' ? 'selected' : '' %>>Yesterday</option>
+      <option value="week" <%= range === 'week' ? 'selected' : '' %>>This Week</option>
+      <option value="month" <%= range === 'month' ? 'selected' : '' %>>This Month</option>
+      <option value="custom" <%= range === 'custom' ? 'selected' : '' %>>Custom</option>
+    </select>
+    <input
+      type="text"
+      id="customRange"
+      style="display: <%= range === 'custom' ? 'block' : 'none' %>"
+      placeholder="Select Date Range"
+    />
+  </div>
+
+  <div class="summary">
+    <div class="card">
+      <h3>Total Collection</h3>
+      <p>₹ <%= total_collection.toLocaleString('en-IN') %></p>
+    </div>
+    <div class="card">
+      <h3>Online Collection</h3>
+      <p>₹ <%= online_total.toLocaleString('en-IN') %></p>
+    </div>
+    <div class="card">
+      <h3>Cash Collection</h3>
+      <p>₹ <%= cash_total.toLocaleString('en-IN') %></p>
+    </div>
+    <div class="card">
+      <h3>Donations (Excluded)</h3>
+      <p>₹ <%= donation_total.toLocaleString('en-IN') %></p>
+    </div>
+  </div>
+
+  <div class="charts">
+    <div class="chart-box">
+      <h4>📊 Top 5 Poojas (Bar)</h4>
+      <canvas id="barChart"></canvas>
+    </div>
+    <div class="chart-box">
+      <h4>📈 Daily Trends (Line)</h4>
+      <canvas id="lineChart"></canvas>
+    </div>
+    <div class="chart-box">
+      <h4>🧾 User-wise Collection</h4>
+      <canvas id="userChart"></canvas>
+    </div>
+  </div>
+
+  <footer>
+    © <%= new Date().getFullYear() %> Shree  Venkatramana Temple | Powered by Sagar IT Solutions
+  </footer>
+
+  <script>
+    // Initialize flatpickr for custom range with default set if exists
+    flatpickr("#customRange", {
+      mode: "range",
+      dateFormat: "Y-m-d",
+      defaultDate: <%= startDate && endDate && range === 'custom' ? `["${startDate}","${endDate}"]` : 'null' %>,
+      onClose: function(selectedDates) {
+        if (selectedDates.length === 2) {
+          const starts = selectedDates[0].toISOString().slice(0, 10);
+          const ends = selectedDates[1].toISOString().slice(0, 10);
+          window.location.href = `/dashboard?range=custom&start=${starts}&end=${ends}`;
+        }
+      },
+    });
+
+    document.getElementById('rangeSelector').addEventListener('change', (e) => {
+      const val = e.target.value;
+      const customInput = document.getElementById('customRange');
+      if (val === 'custom') {
+        customInput.style.display = "block";
+      } else {
+        customInput.style.display = "none";
+        window.location.href = `/dashboard?range=${val}`;
+      }
+    });
+
+    // Chart.js bar chart — Top 5 poojas
+    const barCtx = document.getElementById('barChart').getContext('2d');
+    const poojaData = <%- JSON.stringify(top_poojas || []) %>;
+    new Chart(barCtx, {
+      type: 'bar',
+      data: {
+        labels: poojaData.map(p => p.pooja_name),
+        datasets: [{
+          label: 'Pooja Count',
+          data: poojaData.map(p => p.count),
+          backgroundColor: '#ff9800',
+        }],
+      },
+      options: {
+        plugins: { legend: { display: false } },
+        scales: { y: { beginAtZero: true } },
+      }
+    });
+
+    // Chart.js line chart — Trends
+    const lineCtx = document.getElementById('lineChart').getContext('2d');
+    const trendData = <%- JSON.stringify(trends || []) %>;
+    new Chart(lineCtx, {
+      type: 'line',
+      data: {
+        labels: trendData.map(t => t.date),
+        datasets: [{
+          label: 'Total Collection',
+          data: trendData.map(t => t.amount),
+          borderColor: '#4caf50',
+          fill: false,
+          tension: 0.1,
+        }],
+      },
+      options: {
+        scales: { y: { beginAtZero: true } },
+      }
+    });
+
+    // Chart.js doughnut chart — User-wise collection
+    const userCtx = document.getElementById('userChart').getContext('2d');
+    const userData = <%- JSON.stringify(userwise || []) %>;
+    new Chart(userCtx, {
+      type: 'doughnut',
+      data: {
+        labels: userData.map(u => u.username),
+        datasets: [{
+          data: userData.map(u => u.total),
+          backgroundColor: ['#2196f3', '#f44336', '#ffc107', '#009688', '#673ab7', '#e91e63'],
+        }],
+      },
+      options: {
+        plugins: { legend: { position: 'bottom' }, tooltip: { enabled: true } }
+      }
+    });
+  </script>
+</body>
+</html>

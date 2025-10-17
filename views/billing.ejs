@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Temple Billing - Shree Dongerkery Venkatramana Temple</title>
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to bottom right, #fff8f0, #fce3cd);
+      color: #333;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: #502d16;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      font-size: 26px;
+      font-weight: bold;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    nav {
+      background: #fff;
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      padding: 12px 0;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      font-size: 15px;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: #502d16;
+      font-weight: bold;
+      padding: 6px 14px;
+      border-radius: 20px;
+      transition: 0.3s ease;
+    }
+
+    nav a:hover {
+      background: #ffe6c2;
+    }
+
+    main {
+      flex: 1;
+      padding: 40px 60px;
+    }
+
+    .form-title {
+      text-align: center;
+      font-size: 24px;
+      color: #bb5e00;
+      margin-bottom: 30px;
+    }
+
+    .form-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 30px;
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      flex: 1;
+      min-width: 220px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px 14px;
+      font-size: 16px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      background-color: white;
+    }
+
+    input[readonly] {
+      background-color: #f2f2f2;
+    }
+
+    .form-group-full {
+      width: 100%;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      font-size: 18px;
+      background-color: #994d00;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #bb5e00;
+    }
+
+    footer {
+      background: #eee;
+      text-align: center;
+      padding: 15px;
+      font-size: 14px;
+      color: #555;
+      box-shadow: 0 -1px 4px rgba(0,0,0,0.1);
+    }
+
+    .select2-container--default .select2-selection--single {
+      height: 45px;
+      padding: 5px 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    .select2-container {
+      width: 100% !important;
+    }
+
+    @media (max-width: 768px) {
+      main {
+        padding: 20px;
+      }
+
+      .form-row {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>Shree Venkatramana Temple<br> – Billing Panel</header>
+  <nav>
+    <a href="/dashboard">📊 Dashboard</a>
+    <a href="/billing">🧾 Billing</a>
+    <a href="/pooja-master">⚙️ Pooja Master</a>
+    <a href="/collections">⚙️ My Collection & Widthwarl</a>
+    <a href="/report">📄 Report</a>
+    <a href="/logout">🔓 Logout</a>
+  </nav>
+
+  <main>
+    <form method="POST" action="/billing" onsubmit="return validateForm();">
+      <div class="form-title">🧾 Billing Form</div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Date & Time</label>
+          <input type="datetime-local" name="bill_date" id="bill_date" required>
+        </div>
+
+        <div class="form-group">
+          <label>Devotee Name</label>
+          <input type="text" name="dev_name" id="dev_name" required>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Select Purpose</label>
+          <select name="pooja_name" id="pooja_name" onchange="toggleDonationFields()" required>
+            <option value="">-- Select --</option>
+            <option value="Donation" data-donation="true">Donation</option>
+            <% poojas.forEach(p => { %>
+              <option value="<%= p.pooja_name %>" data-price="<%= p.price %>"><%= p.pooja_name %> - ₹<%= p.price %></option>
+            <% }) %>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row" id="pooja-fields">
+        <div class="form-group">
+          <label>Quantity</label>
+          <input type="number" name="qty" id="qty" value="1" min="1" onchange="updateTotal()">
+        </div>
+
+        <div class="form-group">
+          <label>Price per item</label>
+          <input type="text" id="price" readonly>
+        </div>
+
+        <div class="form-group">
+          <label>Total</label>
+          <input type="text" id="total" readonly>
+        </div>
+      </div>
+
+      <div class="form-row" id="donation-fields" style="display:none;">
+        <div class="form-group form-group-full">
+          <label>Donation Purpose</label>
+          <input type="text" name="donation_purpose" placeholder="Example: Annadana, Renovation, etc">
+        </div>
+
+        <div class="form-group form-group-full">
+          <label>Donation Amount (₹)</label>
+          <input type="number" name="donation_amount" placeholder="Enter Amount">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group form-group-full">
+          <label>Payment Mode</label>
+          <select name="payment_mode" id="payment_mode" onchange="toggleReferenceId()">
+            <option value="Cash" selected>Cash</option>
+            <option value="Online">Online / UPI</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row" id="reference-id-field" style="display:none;">
+        <div class="form-group form-group-full">
+          <label>Reference ID / Transaction ID</label>
+          <input type="text" name="reference_id" placeholder="Enter UPI / Transaction Reference ID">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group form-group-full">
+          <button type="submit">📺 Submit & Print Receipt</button>
+        </div>
+      </div>
+    </form>
+  </main>
+
+  <footer>
+    © <%= new Date().getFullYear() %> Shree  Venkatramana Temple  | Powered by Sagar & Mokshith 
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+  <script>
+    $(document).ready(function () {
+      $('#pooja_name').select2({ placeholder: "Search or Select Pooja / Donation" });
+      const now = new Date();
+      const offset = now.getTimezoneOffset() * 60000;
+      document.getElementById("bill_date").value = new Date(Date.now() - offset).toISOString().slice(0, 16);
+    });
+
+    function updateTotal() {
+      const price = parseFloat(document.getElementById("price").value) || 0;
+      const qty = parseInt(document.getElementById("qty").value) || 1;
+      document.getElementById("total").value = (price * qty).toFixed(2);
+    }
+
+    function toggleDonationFields() {
+      const selected = document.querySelector("#pooja_name").selectedOptions[0];
+      const isDonation = selected && selected.value === "Donation";
+
+      if (isDonation) {
+        document.getElementById("donation-fields").style.display = "flex";
+        document.getElementById("pooja-fields").style.display = "none";
+      } else {
+        document.getElementById("donation-fields").style.display = "none";
+        document.getElementById("pooja-fields").style.display = "flex";
+        const price = selected.getAttribute("data-price") || 0;
+        document.getElementById("price").value = price;
+        updateTotal();
+      }
+    }
+
+    function toggleReferenceId() {
+      const mode = document.getElementById("payment_mode").value;
+      const refField = document.getElementById("reference-id-field");
+      if (mode === "Online") {
+        refField.style.display = "flex";
+      } else {
+        refField.style.display = "none";
+      }
+    }
+
+    function validateForm() {
+      const name = document.getElementById("dev_name").value.trim();
+      if (!name) {
+        alert("Please enter devotee name.");
+        return false;
+      }
+      return true;
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Sri Venkateswara Temple – Cash Handover Portal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Google Fonts and Material Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --header-bg: #22418e;
+      --header-gradient: linear-gradient(90deg, #22418e 0%, #143866 100%);
+      --primary: #3662ae;
+      --accent: #f3dd84;
+      --bg: #f5f7fa;
+      --container-bg: #fff;
+      --green: #16a34a;
+      --red: #d94646;
+      --dark: #10325b;
+    }
+    html, body { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', 'Poppins', Arial, sans-serif;
+      background: var(--bg);
+      color: #182335;
+      min-height: 100vh;
+    }
+
+    /* Sticky Temple Header */
+    .temple-header {
+      position: sticky; top: 0; left: 0; z-index: 99;
+      width: 100%;
+      background: var(--header-gradient);
+      color: #fff;
+      box-shadow: 0 8px 24px rgba(34,65,142,0.06);
+      border-bottom: 4px solid #163b62;
+    }
+    .temple-header-inner {
+      max-width: 1240px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 36px 14px 24px;
+    }
+    .temple-left {
+      display: flex; align-items: center;
+      gap: 18px;
+    }
+    .temple-logo {
+      height: 48px; width: 48px; object-fit: contain;
+      filter: drop-shadow(0 2px 6px #1537712c);
+    }
+    .temple-info { line-height: 1.3; }
+    .temple-title { font-size: 21px; font-weight: 700; letter-spacing: 1px; }
+    .temple-location { font-size: 15px; color: #ffc; opacity: .82; font-weight: 500;}
+    .temple-user {
+      font-size: 15px; font-weight: 500; display:flex; align-items:center; gap:9px;
+      background: rgba(255,255,255,0.16); padding:7px 18px; border-radius:100px;
+      color: #fff; box-shadow:0 2px 7px #1537711a;
+    }
+    .temple-date {
+      font-size: 14px; color: #e6edfa; opacity: 0.97;
+      font-family: 'Poppins', sans-serif;
+      letter-spacing: 1.6px; margin-left: 12px;
+    }
+    .dashboard-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--accent);
+      background: #225cc746;
+      padding: 8px 22px;
+      border-radius: 50px;
+      margin-left:28px;
+      box-shadow: 0 5px 20px #14386626;
+      border: 1.5px solid #ede9c3;
+      display:flex; align-items:center; gap:13px;
+      letter-spacing: 1px;
+    }
+
+    /* Main content styles */
+    .container {
+      max-width: 1100px;
+      margin: 38px auto 0;
+      background: var(--container-bg);
+      padding: 42px 44px 40px 44px;
+      border-radius: 18px;
+      box-shadow: 0 8px 40px rgba(54,98,174,0.08);
+      min-height: 700px;
+    }
+
+    .section-title {
+      font-size: 20px;
+      margin-bottom: 18px;
+      font-weight: 700;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing:1.2px;
+      display:flex;align-items:center;gap:8px;
+    }
+    .section-title i {color:#f1c40f;}
+    .user-bar{
+      display:flex;justify-content:space-between;align-items:center;background:#f6fafd;margin-bottom:22px;border-radius:9px;padding:13px 24px;
+      box-shadow: 0 1px 4px #2662ae10;
+      font-size:16px;
+    }
+    .summary-table, .history-table {
+      width: 100%;
+      border-spacing: 0 16px;
+      border-collapse: separate;
+    }
+    .summary-table th, .summary-table td,
+    .history-table th, .history-table td {
+      padding: 17px 22px;
+      border: 1px solid #e8edf2;
+      text-align: center;
+      font-size: 15.2px;
+    }
+    .summary-table th { background: #f7faf5; color: #2c3e50; font-weight:700;}
+    .history-table th { background: #e9f3ff; color: var(--primary); font-weight:700;}
+    .summary-table td.highlight,
+    .history-table td.highlight {color:var(--green)!important;font-weight:700;}
+
+    /* Currency & Number Alignment */
+    .rupee { font-family: inherit; font-size: 18px; vertical-align: middle; margin-right:2px;}
+    .money-cell { font-feature-settings: "tnum"; letter-spacing:0.7px;}
+    /* Custom cell highlights */
+    .handover-cell { color: var(--red); font-weight: 600; }
+    .rem-cell { color: var(--green); font-weight: 700;}
+    .before-hand { color: #22418e; font-weight: 700;}
+
+    .remaining-box {
+      font-size: 17px;
+      background: #eafaf1;
+      border-left: 4px solid var(--green);
+      color: #104630;
+      border-radius: 10px;
+      font-weight: 500;
+      padding: 14px 25px;
+      margin-top: 17px;
+      display: inline-block;
+    }
+    form input[type="number"] {
+      padding: 10px 13px;
+      border-radius: 7px;
+      border: 1.5px solid #b2b8bb;
+      width: 200px;
+      font-size: 16px;
+      margin-right: 10px;
+    }
+    form button {
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 26px;
+      font-size: 16px;
+      font-weight:600;
+      cursor: pointer;
+      margin-left: 8px;
+      box-shadow:0 2px 7px #22418e12;
+      transition:box-shadow .23s,background .21s;
+    }
+    form button:hover {
+      background: #3762cc;
+      box-shadow:0 6px 18px #22418e21;
+    }
+    .date-filter {
+      margin-bottom: 15px;
+      margin-top: 7px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .date-filter label { font-size: 15px; color: #233; }
+    .date-filter input[type="date"] {
+      padding: 8px 12px;
+      font-size: 14px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    .date-filter button {
+      background: #2ecc71;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 7px 18px;
+      margin-left: 6px;
+      cursor: pointer;
+      font-weight:500;
+      box-shadow:0 2px 9px #16a34a16;
+    }
+    .date-filter button:hover { background: #1e9660; }
+    @media (max-width: 1200px) {
+      .container{padding:25px;}
+      .temple-header-inner{padding:12px;}
+    }
+    @media (max-width: 900px) {
+      .container { padding: 10px; }
+      .temple-header-inner{flex-direction:column;align-items:flex-start;gap:12px;}
+    }
+	 footer {
+      background-color: #e6f7ff;
+      text-align: center;
+      padding: 15px;
+      font-size: 14px;
+      color: #585;
+      border-top: 1px solid #e0c9b6;
+    }
+    @media (max-width: 600px) {
+      .container { padding: 4px;}
+      .user-bar{flex-direction:column;align-items:flex-start;}
+      .user-info { padding: 4px 7px; font-size: 15px; }
+      form input[type="number"], form button { width: 100%; margin-top: 10px; }
+      .summary-table th, .history-table th, .summary-table td, .history-table td { font-size: 13px; padding: 8px;}
+      .temple-title{font-size:16px;}
+      .dashboard-title{font-size:14.5px;}
+    }
+  </style>
+</head>
+<body>
+  <!-- FIXED TEMPLE HEADER -->
+  <div class="temple-header">
+    <div class="temple-header-inner">
+      <div class="temple-left">
+        <img src="/img/logo.png" class="temple-logo" alt="Temple logo" draggable="false"/>
+        <div class="temple-info">
+          <span class="temple-title">Sri Venkateswara Swamy Temple</span><br>
+          <span class="temple-location">Polali, Mangalore</span>
+        </div>
+      </div>
+      <div class="dashboard-title">
+        <i class="fa fa-hand-holding-usd"></i> Cash Handover Panel
+      </div>
+      <div>
+        <span class="temple-user">
+          <i class="fa fa-user-circle"></i> <%= user %>
+        </span>
+        <span class="temple-date">
+          <i class="fa fa-calendar-day"></i>
+          <%= new Date().toLocaleString('en-IN', {
+            weekday: 'short', day: '2-digit', month: 'short', year: 'numeric',
+            hour: '2-digit', minute: '2-digit', hour12: true, timeZone: 'Asia/Kolkata'
+          }) %> IST
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <main class="container">
+    <div class="user-bar">
+      <span>
+        <i class="fas fa-user"></i> <b>User:</b> <%= user %>
+      </span>
+      <span>
+        <i class="fas fa-calendar"></i> <b>Date:</b> <%= today %>
+      </span>
+    </div>
+
+    <div>
+      <div class="section-title"><i class="fas fa-table"></i> Today's Summary</div>
+      <table class="summary-table">
+        <thead>
+          <tr>
+            <th>Cash</th>
+            <th>Online</th>
+            <th>Donation</th>
+            <th>Cash-in-Hand</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="money-cell"><span class="rupee">₹</span><%= summary.cash.toFixed(2) %></td>
+            <td class="money-cell"><span class="rupee">₹</span><%= summary.online.toFixed(2) %></td>
+            <td class="money-cell"><span class="rupee">₹</span><%= summary.donation.toFixed(2) %></td>
+            <td class="highlight money-cell"><span class="rupee">₹</span><%= summary.remaining.toFixed(2) %></td>
+            <td class="money-cell"><span class="rupee">₹</span><%= summary.total.toFixed(2) %></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div style="margin-top: 32px;">
+      <div class="section-title"><i class="fas fa-wallet"></i> Submit Handover Cash</div>
+      <form method="POST" action="/withdraw">
+        <input type="number" name="handover_amount" required min="0" max="<%= summary.remaining.toFixed(2) %>" step="0.01" placeholder="Enter handover amount">
+        <button type="submit">Submit</button>
+      </form>
+      <div class="remaining-box" style="margin-top:12px;">
+        <i class="fas fa-money-bill-wave"></i>
+        Remaining Cash-in-Hand: <span class="rupee">₹</span><%= summary.remaining.toFixed(2) %>
+      </div>
+    </div>
+
+    <div style="margin-top: 40px;">
+      <div class="section-title"><i class="fas fa-clock"></i> Handover History</div>
+      <form class="date-filter" method="GET" action="/collections">
+        <label for="date"><i class="fas fa-calendar-week"></i> <b>Filter by Date:</b></label>
+        <input type="date" id="date" name="date" value="<%= filterDate || today %>">
+        <button type="submit"><i class="fas fa-search"></i> Filter</button>
+      </form>
+
+      <table class="history-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Cash</th>
+            <th>Online</th>
+            <th>Donation</th>
+            <th>Cash in Hand (Before)</th>
+            <th>Handover</th>
+            <th>Remaining</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (withdrawals.length) {
+               let handoverSum = 0;
+               withdrawals.slice().reverse().forEach(w => {
+                 let cashBefore = (w.cash || 0) - handoverSum;
+          %>
+            <tr>
+              <td><%= new Date(w.created_at).toLocaleDateString('en-IN') %></td>
+              <td><%= new Date(w.created_at).toLocaleTimeString('en-IN', {hour12:true}) %></td>
+              <td class="money-cell"><span class="rupee">₹</span><%= (w.cash || 0).toFixed(2) %></td>
+              <td class="money-cell"><span class="rupee">₹</span><%= (w.online || 0).toFixed(2) %></td>
+              <td class="money-cell"><span class="rupee">₹</span><%= (w.donation || 0).toFixed(2) %></td>
+              <td class="before-hand"><span class="rupee">₹</span><%= cashBefore.toFixed(2) %></td>
+              <td class="handover-cell"><span class="rupee">₹</span><%= (w.handover || 0).toFixed(2) %></td>
+              <td class="rem-cell"><span class="rupee">₹</span><%= (w.remaining || 0).toFixed(2) %></td>
+            </tr>
+          <% handoverSum += (w.handover || 0); }); %>
+          <% } else { %>
+            <tr><td colspan="8">No handovers made on this date.</td></tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <footer>
+    © <%= new Date().getFullYear() %> Shree  Venkatramana Temple, Polali| Designed by Sagar & Mokshith 
+  </footer>
+</body>
+</html>
