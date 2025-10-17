@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Siddi Vinayaka Temple - Login</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      height: 100%;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #f1f1f1, #ffffff);
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    header {
+      background-color: #502d16;
+      color: #fff;
+      padding: 20px;
+      text-align: center;
+      font-size: 22px;
+      font-weight: bold;
+    }
+
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: row;
+      background-color: #fdfdfd;
+    }
+
+    .left {
+      flex: 1.5;
+      background: url('https://picsum.photos/seed/temple1/900/1200') center/cover no-repeat;
+      animation: gallery 12s infinite alternate;
+    }
+
+    @keyframes gallery {
+      0% { background-image: url('https://picsum.photos/seed/temple1/900/1200'); }
+      50% { background-image: url('https://picsum.photos/seed/temple2/900/1200'); }
+      100% { background-image: url('https://picsum.photos/seed/temple3/900/1200'); }
+    }
+
+    .right {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+    }
+
+    .login-box {
+      background: #ffffff;
+      padding: 30px 40px;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.15);
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .login-box h2 {
+      text-align: center;
+      margin-bottom: 25px;
+      color: #333;
+    }
+
+    .login-box input {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+
+    .login-box button {
+      width: 100%;
+      padding: 12px;
+      background-color: #994d00;
+      border: none;
+      color: white;
+      font-size: 18px;
+      font-weight: bold;
+      border-radius: 5px;
+      cursor: pointer;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      transition: 0.3s ease;
+    }
+
+    .login-box button:hover {
+      background-color: #bb5e00;
+    }
+
+    .message {
+      text-align: center;
+      margin-top: 15px;
+      color: red;
+      font-weight: bold;
+    }
+
+    footer {
+      background-color: #eee;
+      text-align: center;
+      padding: 10px;
+      font-size: 14px;
+      color: #555;
+    }
+
+    @media (max-width: 768px) {
+      .main {
+        flex-direction: column;
+      }
+      .left {
+        height: 250px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+     <br>
+      
+    </header>
+
+    <div class="main">
+      <div class="left"></div>
+
+      <div class="right">
+        <div class="login-box">
+          <h2>Temple Billing Login</h2>
+          <form method="POST" action="/login">
+            <input name="username" type="text" placeholder="Username" required>
+            <input name="password" type="password" placeholder="Password" required>
+            <button type="submit">Login</button>
+            <% if (error) { %>
+              <div class="message"><%= error %></div>
+            <% } else { %>
+              <div class="message" style="color:green;">Welcome! Please login.</div>
+            <% } %>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      © <%= new Date().getFullYear() %> Shree Dongerkery Venkatramana Temple Dongerkery | Powered by Sagar IT Solutions
+    </footer>
+  </div>
+</body>
+</html>
