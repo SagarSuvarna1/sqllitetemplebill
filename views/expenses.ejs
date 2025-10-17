@@ -238,7 +238,7 @@
         <% } else { %>
           <% expenses.forEach(e => { %>
             <tr>
-              <td><%= e.expense_date.toISOString().split('T')[0] %></td>
+             <td><%= e.expense_date_formatted %></td>
               <td><%= e.purpose %></td>
               <td><%= e.amount %></td>
               <td><%= e.added_by %></td>
